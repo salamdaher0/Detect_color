@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<img id="scream" src="images/studio.jpg" alt="The Scream" style="display:none;" width="400" height="277">
+<canvas id="myCanvas" width="400" height="277" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+<script>
+  var c;
+  var ctx;
+  var imgData;
+document.getElementById("scream").onload=function(){
+  c=document.getElementById("myCanvas");
+  ctx=c.getContext("2d");
+  var img=document.getElementById("scream");
+  ctx.drawImage(img,0,0);
+  imgData=ctx.getImageData(0,0,c.width,c.height);
+  // invert colors
+  for (var i=0;i<imgData.data.length;i+=4)
+    {
+    imgData.data[i]=imgData.data[i];
+    imgData.data[i+1]=imgData.data[i+1];
+    imgData.data[i+2]=imgData.data[i+2];
+    imgData.data[i+3]=255;
+    }
+  ctx.putImageData(imgData,0,0);
+  alert(c);
+  
+  function findPos(obj){
+    var current_left = 0, current_top = 0;
+    if (obj.offsetParent){
+        do{
+            current_left += obj.offsetLeft;
+            current_top += obj.offsetTop;
+        }while(obj == obj.offsetParent);
+        return {x: current_left, y: current_top};
+    }
+    return undefined;
+    }
+
+    function rgbToHex(r, g, b){
+    if (r > 255 || g > 255 || b > 255)
+        throw "Invalid color component";
+    return ((r << 16) | (g << 8) | b).toString(16);
+    };
+  
+  
+  c.addEventListener('click', function(e){
+    
+    var position = findPos(this);
+    var x = e.pageX - position.x;
+    var y = e.pageY - position.y;
+    var coordinate = "x=" + x + ", y=" + y;
+    alert("x ="+x + ", y = " + y);
+    
+    var p = ctx.getImageData(x, y, 1, 1).data;
+     alert("p ="+p);
+    var hex = "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
+    alert("HEX: " + hex);
+    
+    }
+    );
+  
+};
+
+
+
+
+</script>
+
+</body>
+</html>
