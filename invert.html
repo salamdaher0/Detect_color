@@ -2,81 +2,144 @@
 <html>
 <body>
 
-<img id="scream" src="images/brain.jpg" alt="The Scream" style="display:none;" width="400" height="277"></img>
-<canvas id="myCanvas" width="1200" height="800" style="border:1px solid #d3d3d3;">
-Your browser does not support the HTML5 canvas tag.</canvas>
+<img id="brain" src="images/brain.jpg" alt="brain" style="display:none;" width="400" height="277"></img>
+<img id="brain_a" src="images/brain_alpha.jpg" alt="brain_alpha" style="display:none;" width="400" height="277"></img>
+
+
+
+<div style="position: relative;">
+ <canvas id="myCanvas_a" width="1200" height="1000" 
+   style="background-color: #000000; border:1px; position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
+ <canvas id="myCanvas" width="1300" height="900" 
+   style="background-color: #00ff00; border:1px; position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+</div>
 
 <script>
-  var c;
-  var ctx;
-  var imgData;
-  document.getElementById("scream").onload=function(){
-  c=document.getElementById("myCanvas");
-  ctx=c.getContext("2d");
-  var img=document.getElementById("scream");
-  
-  ctx.drawImage(img,0,0);
-  imgData=ctx.getImageData(0,0,c.width,c.height);
-  // invert colors
-  for (var i=0;i<imgData.data.length;i+=4)
-    {
-  if (imgData.data[i] > 200 && imgData.data[i+1] <150 && imgData.data[i+2] <150) {
-      imgData.data[i]=255;
-    imgData.data[i+1]=0;
-    imgData.data[i+2]=0;
-   // imgData.data[i+3]=0;
-    }
-   if (imgData.data[i] <90 && imgData.data[i+1] <200 && imgData.data[i+2] >160) {
-      imgData.data[i]=0;
-    imgData.data[i+1]=0;
-    imgData.data[i+2]=255;
-    }
-   // imgData.data[i]=imgData.data[i];
-   // imgData.data[i+1]=imgData.data[i+1];
-   // imgData.data[i+2]=imgData.data[i+2];
-   // imgData.data[i+3]=255;
-    }
+  var c,c_a;
+  var ctx, ctx_a;
+  var imgData, imgData_a;
  
-  ctx.putImageData(imgData,0,0);
+ document.getElementById("brain_a").onload=function(){
+	  c_a=document.getElementById("myCanvas_a");
+	  ctx_a=c_a.getContext("2d");
+	  var img_a=document.getElementById("brain_a");
+	  ctx_a.drawImage(img_a,0,0);
+	  imgData_a=ctx_a.getImageData(0,0,c_a.width,c_a.height);
+	  ctx_a.putImageData(imgData_a,0,0);
+	  
+		  function findPos(obj){
+		    var current_left = 0, current_top = 0;
+		    if (obj.offsetParent){
+		        do{
+		            current_left += obj.offsetLeft;
+		            current_top += obj.offsetTop;
+		        }while(obj == obj.offsetParent);
+		        return {x: current_left, y: current_top};
+		    }
+		    return undefined;
+	    }
+	
+	    function rgbToHex(r, g, b){
+	    if (r > 255 || g > 255 || b > 255)
+	        throw "Invalid color component";
+	    return ((r << 16) | (g << 8) | b).toString(16);
+	    };
+	  
+	  
+	  c.addEventListener('click', function(e){
+	    var position = findPos(this);
+	    var x = e.pageX - position.x;
+	    var y = e.pageY - position.y;
+	    var coordinate = "x=" + x + ", y=" + y;
+	    var p_a = ctx_a.getImageData(x, y, 1, 1).data;
+	    var hex = "#" + ("000000" + rgbToHex(p_a[0], p_a[1], p_a[2])).slice(-6);
+	    alert("(x_a ="+x + ", y_a = " + y + ")" +
+	          "\n HEX_a: " + hex +
+	          "\n r_a = " + p_a[0] +
+	          "\n g_a = " +  p_a[1] +
+	          "\n b_a = " +  p_a[2] +
+	          "\n alpha = " + p_a[3]);
+	    
+	    if(p_a[0]==210) {alert("yellow_a");}
+	    if(p_a[0]==168) {alert("green_a");}
+	    if(p_a[0]==189) {alert("blue_a");}
+	    if(p_a[0]==231) {alert("red_a");}
+	    if(p_a[0]==149) {alert("purple_a");}
+	    if(p_a[0]==129) {alert("gray_a");}
+	     });
   
-  function findPos(obj){
-    var current_left = 0, current_top = 0;
-    if (obj.offsetParent){
-        do{
-            current_left += obj.offsetLeft;
-            current_top += obj.offsetTop;
-        }while(obj == obj.offsetParent);
-        return {x: current_left, y: current_top};
-    }
-    return undefined;
-    }
-
-    function rgbToHex(r, g, b){
-    if (r > 255 || g > 255 || b > 255)
-        throw "Invalid color component";
-    return ((r << 16) | (g << 8) | b).toString(16);
-    };
+}; 
   
-  
-  c.addEventListener('click', function(e){
-    var position = findPos(this);
-    var x = e.pageX - position.x;
-    var y = e.pageY - position.y;
-    var coordinate = "x=" + x + ", y=" + y;
-    var p = ctx.getImageData(x, y, 1, 1).data;
-    var hex = "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
-    alert("(x ="+x + ", y = " + y + ")" +
-          "\n HEX: " + hex +
-          "\n r = " + p[0] +
-          "\n g = " +  p[1] +
-          "\n b = " +  p[2] +
-          "\n alpha = " + p[3]);
-    
-    if(p[0] > 200 && p[1] <150 & p[2] < 150) {alert("red");}
-    if(p[0] < 170 && p[1] <150 & p[2] > 170) {alert("blue");}
-    
-    }
-    );
+  document.getElementById("brain").onload=function(){
+	  c=document.getElementById("myCanvas");
+	  ctx=c.getContext("2d");
+	  var img=document.getElementById("brain");
+	  var img_a=document.getElementById("brain_a");
+	  ctx.drawImage(img,0,0);
+//	  ctx.drawImage(img_a,500,0);
+	  imgData=ctx.getImageData(0,0,c.width,c.height);
+	 // imgData_a=ctx.getImageData(0,0,c.width,c.height);
+	  
+	  // invert colors
+	/*  for (var i=0;i<imgData.data.length;i+=4)
+	    {
+	  if (imgData.data[i] > 200 && imgData.data[i+1] <150 && imgData.data[i+2] <150) {
+	      imgData.data[i]=255;
+	    imgData.data[i+1]=0;
+	    imgData.data[i+2]=0;
+	   // imgData.data[i+3]=0;
+	    }
+	   if (imgData.data[i] <90 && imgData.data[i+1] <200 && imgData.data[i+2] >160) {
+	      imgData.data[i]=0;
+	    imgData.data[i+1]=0;
+	    imgData.data[i+2]=255;
+	    }
+	   // imgData.data[i]=imgData.data[i];
+	   // imgData.data[i+1]=imgData.data[i+1];
+	   // imgData.data[i+2]=imgData.data[i+2];
+	   // imgData.data[i+3]=255;
+	    }
+	 */
+	  ctx.putImageData(imgData,0,0);
+	  
+		  function findPos(obj){
+		    var current_left = 0, current_top = 0;
+		    if (obj.offsetParent){
+		        do{
+		            current_left += obj.offsetLeft;
+		            current_top += obj.offsetTop;
+		        }while(obj == obj.offsetParent);
+		        return {x: current_left, y: current_top};
+		    }
+		    return undefined;
+	    }
+	
+	    function rgbToHex(r, g, b){
+	    if (r > 255 || g > 255 || b > 255)
+	        throw "Invalid color component";
+	    return ((r << 16) | (g << 8) | b).toString(16);
+	    };
+	  
+	  
+	  c.addEventListener('click', function(e){
+	    var position = findPos(this);
+	    var x = e.pageX - position.x;
+	    var y = e.pageY - position.y;
+	    var coordinate = "x=" + x + ", y=" + y;
+	    var p = ctx.getImageData(x, y, 1, 1).data;
+	    var hex = "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
+	    /*
+	    alert("(x ="+x + ", y = " + y + ")" +
+	          "\n HEX: " + hex +
+	          "\n r = " + p[0] +
+	          "\n g = " +  p[1] +
+	          "\n b = " +  p[2] +
+	          "\n alpha = " + p[3]);
+	    
+	    if(p[0] > 200 && p[1] <150 & p[2] < 150) {alert("red");}
+	    if(p[0] < 170 && p[1] <150 & p[2] > 170) {alert("blue");}
+	    */
+	     });
   
 };
 
